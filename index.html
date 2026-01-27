@@ -36,7 +36,6 @@
 
     .field { margin: 16px 0; width: 100%; max-width: 400px; margin-left: auto; margin-right: auto; }
 
-    /* 入力欄のスタイル：ひらがな入力OKのまま隠す設定 */
     #wordInput {
       font-size: 1.2rem;
       padding: 8px 12px;
@@ -45,17 +44,16 @@
       text-align: center;
     }
 
-    /* 目隠しモード用のCSSクラス */
+    /* 目隠し用CSS */
     .masked {
-      -webkit-text-security: disc; /* Chrome, Safari, Edge用 */
-      text-security: disc;        /* 将来用 */
+      -webkit-text-security: disc;
+      text-security: disc;
     }
 
-    /* 古いブラウザ等の予備：text-securityが効かない場合、文字を透明っぽくする */
     @supports not ((-webkit-text-security: disc) or (text-security: disc)) {
       .masked {
         color: transparent !important;
-        text-shadow: 0 0 10px rgba(0,0,0,0.5); /* ぼかして見えなくする */
+        text-shadow: 0 0 10px rgba(0,0,0,0.5);
       }
     }
 
@@ -158,7 +156,7 @@
 
   <div id="result" class="screen">
     <h2>こたえはわかりましたか？</h2>
-    <div style="margin-bottom: 10px;">もう一度見る（難易度変更可）</div>
+    <div style="margin-bottom: 10px;">もう一度見る（難易度をえらんでね）</div>
     <div id="replayLevels" class="levels"></div>
     
     <div style="margin-top: 20px;">
@@ -200,14 +198,9 @@
       screen.classList.add('active');
     }
 
-    // ① ひらがな入力を邪魔しない「目隠し」機能
     maskToggle.onclick = () => {
       wordInput.classList.toggle('masked');
-      if (wordInput.classList.contains('masked')) {
-        maskToggle.textContent = "表示する";
-      } else {
-        maskToggle.textContent = "●●●で隠す";
-      }
+      maskToggle.textContent = wordInput.classList.contains('masked') ? "表示する" : "●●●で隠す";
     };
 
     function renderLevelButtons(container) {
@@ -218,9 +211,16 @@
         btn.textContent = lv.name;
         btn.onclick = (e) => {
           e.stopPropagation();
-          selectedLevel = lv;
+          selectedLevel = lv; // 難易度を更新
+          
+          // 全てのレベルボタン表示を更新
           renderLevelButtons(document.getElementById('levelButtons'));
           renderLevelButtons(document.getElementById('replayLevels'));
+
+          // もしリザルト画面でのクリックなら、そのまま再出題へ
+          if (container.id === 'replayLevels') {
+            showScreen(wait);
+          }
         };
         container.appendChild(btn);
       });
@@ -243,24 +243,17 @@
 
     document.getElementById('startBtn').onclick = () => {
       const input = wordInput.value.trim();
-
       if (selectedLists.length > 0) {
         let pool = [];
-        // ② 6文字以上の変数名 hiraganaLong に合わせて修正
         try {
           if (selectedLists.includes("1")) pool = pool.concat(hiragana1);
           if (selectedLists.includes("2")) pool = pool.concat(hiragana2);
           if (selectedLists.includes("3")) pool = pool.concat(hiragana3);
           if (selectedLists.includes("4")) pool = pool.concat(hiragana4);
           if (selectedLists.includes("5")) pool = pool.concat(hiragana5);
-          if (selectedLists.includes("6")) pool = pool.concat(hiraganaLong); // ここを修正しました！
+          if (selectedLists.includes("6")) pool = pool.concat(hiraganaLong);
         } catch(e) {
-          alert("ワードリストの読み込みに失敗しました。jsファイルの名前や変数名を確認してください。");
-          return;
-        }
-
-        if (pool.length === 0) {
-          alert("単語が見つかりませんでした。");
+          alert("ワードリストの読み込みに失敗しました。");
           return;
         }
         currentWord = pool[Math.floor(Math.random() * pool.length)];
@@ -270,7 +263,6 @@
         alert("問題を入力するか、文字数を選んでください");
         return;
       }
-
       showScreen(wait);
     };
 
@@ -281,7 +273,6 @@
       let count = 3;
       playContent.textContent = count;
       playContent.className = 'countdown';
-
       const timer = setInterval(() => {
         count--;
         if (count > 0) {
@@ -296,7 +287,6 @@
     function showWord() {
       playContent.className = 'flash-word';
       playContent.textContent = currentWord;
-      
       setTimeout(() => {
         playContent.textContent = '';
         setTimeout(() => showScreen(result), 1000);
@@ -307,7 +297,7 @@
       showScreen(play);
       playContent.className = 'flash-word';
       playContent.textContent = currentWord;
-      
+      // 答え画面ではクリックでホームへ
       setTimeout(() => {
         play.onclick = () => {
           play.onclick = null;
