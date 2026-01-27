@@ -24,7 +24,6 @@
       min-height: 100vh;
       padding: 24px 16px;
       box-sizing: border-box;
-      display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
@@ -35,13 +34,24 @@
     h1 { font-size: 2.2rem; margin-bottom: 12px; }
     p { line-height: 1.6; }
 
-    .field { margin: 16px 0; }
+    .field { margin: 16px 0; position: relative; width: 100%; max-width: 400px; margin-left: auto; margin-right: auto; }
 
-    input[type="text"] {
+    /* 入力欄のスタイル修正 */
+    input[type="text"], input[type="password"] {
       font-size: 1.2rem;
       padding: 8px 12px;
-      width: 90%;
-      max-width: 400px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* 目隠しボタンのスタイル */
+    .mask-toggle {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: #007aff;
+      text-decoration: underline;
+      cursor: pointer;
+      display: inline-block;
     }
 
     .levels {
@@ -79,32 +89,36 @@
     }
 
     .flash-word {
-      font-size: 3rem;
+      font-size: 4rem; /* 少し大きくしました */
       font-weight: bold;
     }
 
     .countdown {
-      font-size: 3rem;
+      font-size: 5rem;
+      font-weight: bold;
     }
 
     .white {
       background: #fff;
+      justify-content: center; /* 中央寄せ */
     }
+
+    /* こたえ画面の調整 */
+    #result h2 { margin-bottom: 30px; }
   </style>
 </head>
 
 <body>
-  <!-- ホーム画面 -->
   <div id="home" class="screen active">
     <h1>フラッシュことば</h1>
     <p>
-      一瞬だけ見えることばを見て、なんて書いてあったかを答えるゲームです。<br>
-      問題を入力するか、ひとりモードで自動出題もできます。
+      一瞬だけ見えることばを見て、なんて書いてあったかを答えるゲームです。
     </p>
 
     <div class="field">
       <label>問題：</label><br>
       <input type="text" id="wordInput" placeholder="表示させたい言葉を入力">
+      <span class="mask-toggle" id="maskToggle">●●●で隠す</span>
     </div>
 
     <div style="margin-top:12px;">ひとりで ちょうせんする</div>
@@ -117,30 +131,33 @@
       <div class="level-btn" data-len="6">6もじいじょう</div>
     </div>
 
-    <div style="margin-top:12px;">難易度：</div>
+    <div style="margin-top:12px;">難易度（表示時間）：</div>
     <div class="levels" id="levelButtons"></div>
 
     <button class="main" id="startBtn">出題</button>
   </div>
 
-  <!-- 待機画面 -->
   <div id="wait" class="screen">
-    <p>画面をタッチすると出題します</p>
+    <div style="margin-top: 40vh;">
+      <p style="font-size: 1.5rem;">画面をタッチすると<br>出題します</p>
+    </div>
   </div>
 
-  <!-- カウントダウン・出題画面 -->
   <div id="play" class="screen white">
     <div id="playContent"></div>
   </div>
 
-  <!-- 結果画面 -->
   <div id="result" class="screen">
-    <h2>もう一度見る</h2>
+    <h2>こたえはわかりましたか？</h2>
+    <div style="margin-bottom: 10px;">もう一度見る（難易度変更可）</div>
     <div class="levels" id="replayLevels"></div>
-    <button class="main" id="showAnswerBtn">こたえ</button>
+    
+    <div style="margin-top: 20px;">
+      <button class="main" id="showAnswerBtn">こたえを表示</button>
+      <button class="main" style="background:#888;" onclick="location.reload()">最初にもどる</button>
+    </div>
   </div>
 
-  <!-- ワードリスト -->
   <script src="words-hiragana1.js"></script>
   <script src="words-hiragana2.js"></script>
   <script src="words-hiragana3.js"></script>
@@ -166,21 +183,38 @@
     const play = document.getElementById('play');
     const playContent = document.getElementById('playContent');
     const result = document.getElementById('result');
+    const wordInput = document.getElementById('wordInput');
+    const maskToggle = document.getElementById('maskToggle');
 
+    // 画面切り替え
     function showScreen(screen) {
       [home, wait, play, result].forEach(s => s.classList.remove('active'));
       screen.classList.add('active');
     }
 
+    // ① 目隠し機能の実装
+    maskToggle.onclick = () => {
+      if (wordInput.type === "text") {
+        wordInput.type = "password";
+        maskToggle.textContent = "表示する";
+      } else {
+        wordInput.type = "text";
+        maskToggle.textContent = "●●●で隠す";
+      }
+    };
+
+    // 難易度ボタンの生成
     function renderLevelButtons(container) {
       container.innerHTML = '';
       levels.forEach(lv => {
         const btn = document.createElement('div');
-        btn.className = 'level-btn' + (lv === selectedLevel ? ' selected' : '');
+        btn.className = 'level-btn' + (lv.name === selectedLevel.name ? ' selected' : '');
         btn.textContent = lv.name;
-        btn.onclick = () => {
+        btn.onclick = (e) => {
+          e.stopPropagation(); // 親のクリックイベント伝播を防止
           selectedLevel = lv;
-          renderLevelButtons(container);
+          renderLevelButtons(document.getElementById('levelButtons'));
+          renderLevelButtons(document.getElementById('replayLevels'));
         };
         container.appendChild(btn);
       });
@@ -189,6 +223,7 @@
     renderLevelButtons(document.getElementById('levelButtons'));
     renderLevelButtons(document.getElementById('replayLevels'));
 
+    // ひとりモードの選択
     document.querySelectorAll('#soloButtons .level-btn').forEach(btn => {
       btn.onclick = () => {
         btn.classList.toggle('selected');
@@ -201,18 +236,24 @@
       };
     });
 
+    // ② 画面遷移の自動化
     document.getElementById('startBtn').onclick = () => {
-      const input = document.getElementById('wordInput').value.trim();
+      const input = wordInput.value.trim();
 
       if (selectedLists.length > 0) {
         let pool = [];
-        if (selectedLists.includes("1")) pool = pool.concat(hiragana1);
-        if (selectedLists.includes("2")) pool = pool.concat(hiragana2);
-        if (selectedLists.includes("3")) pool = pool.concat(hiragana3);
-        if (selectedLists.includes("4")) pool = pool.concat(hiragana4);
-        if (selectedLists.includes("5")) pool = pool.concat(hiragana5);
-        if (selectedLists.includes("6")) pool = pool.concat(hiraganaSentences);
+        // リストが存在するかチェックしながら結合
+        if (selectedLists.includes("1") && typeof hiragana1 !== 'undefined') pool = pool.concat(hiragana1);
+        if (selectedLists.includes("2") && typeof hiragana2 !== 'undefined') pool = pool.concat(hiragana2);
+        if (selectedLists.includes("3") && typeof hiragana3 !== 'undefined') pool = pool.concat(hiragana3);
+        if (selectedLists.includes("4") && typeof hiragana4 !== 'undefined') pool = pool.concat(hiragana4);
+        if (selectedLists.includes("5") && typeof hiragana5 !== 'undefined') pool = pool.concat(hiragana5);
+        if (selectedLists.includes("6") && typeof hiraganaSentences !== 'undefined') pool = pool.concat(hiraganaSentences);
 
+        if (pool.length === 0) {
+          alert("ワードリストが見つかりません。jsファイルを確認してください。");
+          return;
+        }
         currentWord = pool[Math.floor(Math.random() * pool.length)];
       } else if (input) {
         currentWord = input;
@@ -221,9 +262,10 @@
         return;
       }
 
-      showScreen(wait);
+      showScreen(wait); // 待機画面へ
     };
 
+    // 待機画面をタッチしたらカウントダウン開始
     wait.onclick = () => startCountdown();
 
     function startCountdown() {
@@ -246,20 +288,33 @@
     function showWord() {
       playContent.className = 'flash-word';
       playContent.textContent = currentWord;
+      
       setTimeout(() => {
         playContent.textContent = '';
-        setTimeout(() => showScreen(result), 2000);
+        // 出題終了から2秒後にリザルト画面へ自動移動
+        setTimeout(() => showScreen(result), 1000);
       }, selectedLevel.time);
     }
 
+    // 答えの表示
     document.getElementById('showAnswerBtn').onclick = () => {
       showScreen(play);
       playContent.className = 'flash-word';
       playContent.textContent = currentWord;
-      play.onclick = () => {
-        play.onclick = null;
-        showScreen(home);
-      };
+      
+      // 答え画面では、画面をクリックしたらホームに戻るように設定
+      setTimeout(() => {
+        play.onclick = () => {
+          play.onclick = null;
+          showScreen(home);
+        };
+      }, 500);
+    };
+
+    // 「もう一度見る」のための設定：リザルト画面の難易度ボタンを押したときにすぐ再開したい場合はここを調整
+    document.getElementById('replayLevels').onclick = () => {
+      // 難易度を選び直して再度「待機画面」から開始
+      showScreen(wait);
     };
   </script>
 </body>
