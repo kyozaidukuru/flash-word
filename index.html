@@ -1,37 +1,42 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <title>フラッシュことば</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+
   <style>
-    
     body {
       margin: 0;
-      font-family: 'Kosugi Maru', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Kosugi Maru', system-ui, sans-serif;
       background: #f7f7f7;
       color: #222;
       text-align: center;
       min-height: 100vh;
     }
+
     .screen {
       display: none;
       min-height: 100vh;
       padding: 24px 16px;
       box-sizing: border-box;
+      display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: flex-start;
     }
+
     .screen.active { display: flex; }
 
     h1 { font-size: 2.2rem; margin-bottom: 12px; }
     p { line-height: 1.6; }
 
     .field { margin: 16px 0; }
+
     input[type="text"] {
       font-size: 1.2rem;
       padding: 8px 12px;
@@ -44,8 +49,9 @@
       justify-content: center;
       gap: 8px;
       flex-wrap: wrap;
-      margin: 16px 0;
+      margin: 8px 0;
     }
+
     .level-btn {
       padding: 10px 12px;
       border-radius: 8px;
@@ -54,6 +60,7 @@
       cursor: pointer;
       min-width: 80px;
     }
+
     .level-btn.selected {
       background: #333;
       color: #fff;
@@ -85,39 +92,33 @@
     }
   </style>
 </head>
+
 <body>
   <!-- ホーム画面 -->
   <div id="home" class="screen active">
     <h1>フラッシュことば</h1>
     <p>
-      一瞬だけ見えることばを見て、なんて書いてあったかを答えてもらうゲームです。<br />
-      問題にしたい言葉を打ち込み、難易度を選んだら、スタートを押して出題できます。
+      一瞬だけ見えることばを見て、なんて書いてあったかを答えるゲームです。<br>
+      問題を入力するか、ひとりモードで自動出題もできます。
     </p>
 
-
     <div class="field">
-      <label>問題：</label><br />
-      <input type="text" id="wordInput" placeholder="表示させたい言葉を入力" />
+      <label>問題：</label><br>
+      <input type="text" id="wordInput" placeholder="表示させたい言葉を入力">
     </div>
 
-    <!-- ひとりで学習セクション -->
-    <div id="soloSection" style="margin:24px 0;">
-      <p style="font-weight:bold;">ひとりで　ちょうせんする</p>
-      <div class="levels" id="soloLengthButtons">
-        <div class="level-btn" data-length="1">1もじ</div>
-        <div class="level-btn" data-length="2">2もじ</div>
-        <div class="level-btn" data-length="3">3もじ</div>
-        <div class="level-btn" data-length="4">4もじ</div>
-        <div class="level-btn" data-length="5">5もじ</div>
-        <div class="level-btn" data-length="6">6もじいじょう</div>
-      </div>
-    </div>
+    <div style="margin-top:12px;">ひとりで ちょうせんする</div>
+    <div class="levels" id="soloButtons">
+      <div class="level-btn" data-len="1">1もじ</div>
+      <div class="level-btn" data-len="2">2もじ</div>
+      <div class="level-btn" data-len="3">3もじ</div>
+      <div class="level-btn" data-len="4">4もじ</div>
+      <div class="level-btn" data-len="5">5もじ</div>
+      <div class="level-btn" data-len="6">6もじいじょう</div>
     </div>
 
-    <div style="margin-top:8px;">
-      <div>難易度：</div>
-      <div class="levels" id="levelButtons"></div>
-    </div>
+    <div style="margin-top:12px;">難易度：</div>
+    <div class="levels" id="levelButtons"></div>
 
     <button class="main" id="startBtn">出題</button>
   </div>
@@ -139,13 +140,13 @@
     <button class="main" id="showAnswerBtn">こたえ</button>
   </div>
 
+  <!-- ワードリスト -->
   <script src="words-hiragana1.js"></script>
-<script src="words-hiragana2.js"></script>
-<script src="words-hiragana3.js"></script>
-<script src="words-hiragana4.js"></script>
-<script src="words-hiragana5.js"></script>
-<script src="words-hiraganaSentences.js"></script>
-
+  <script src="words-hiragana2.js"></script>
+  <script src="words-hiragana3.js"></script>
+  <script src="words-hiragana4.js"></script>
+  <script src="words-hiragana5.js"></script>
+  <script src="words-hiraganaSentences.js"></script>
 
   <script>
     const levels = [
@@ -158,7 +159,7 @@
 
     let selectedLevel = levels[0];
     let currentWord = '';
-    let soloSelectedLengths = new Set();
+    let selectedLists = [];
 
     const home = document.getElementById('home');
     const wait = document.getElementById('wait');
@@ -171,7 +172,7 @@
       screen.classList.add('active');
     }
 
-    function renderLevelButtons(container, onSelect) {
+    function renderLevelButtons(container) {
       container.innerHTML = '';
       levels.forEach(lv => {
         const btn = document.createElement('div');
@@ -179,39 +180,51 @@
         btn.textContent = lv.name;
         btn.onclick = () => {
           selectedLevel = lv;
-          renderLevelButtons(container, onSelect);
-          if (onSelect) onSelect(lv);
+          renderLevelButtons(container);
         };
         container.appendChild(btn);
       });
     }
 
-    const levelButtons = document.getElementById('levelButtons');
-    const replayLevels = document.getElementById('replayLevels');
-    renderLevelButtons(levelButtons);
-    renderLevelButtons(replayLevels);
+    renderLevelButtons(document.getElementById('levelButtons'));
+    renderLevelButtons(document.getElementById('replayLevels'));
+
+    document.querySelectorAll('#soloButtons .level-btn').forEach(btn => {
+      btn.onclick = () => {
+        btn.classList.toggle('selected');
+        const len = btn.dataset.len;
+        if (btn.classList.contains('selected')) {
+          selectedLists.push(len);
+        } else {
+          selectedLists = selectedLists.filter(v => v !== len);
+        }
+      };
+    });
 
     document.getElementById('startBtn').onclick = () => {
       const input = document.getElementById('wordInput').value.trim();
-      if (input) {
+
+      if (selectedLists.length > 0) {
+        let pool = [];
+        if (selectedLists.includes("1")) pool = pool.concat(hiragana1);
+        if (selectedLists.includes("2")) pool = pool.concat(hiragana2);
+        if (selectedLists.includes("3")) pool = pool.concat(hiragana3);
+        if (selectedLists.includes("4")) pool = pool.concat(hiragana4);
+        if (selectedLists.includes("5")) pool = pool.concat(hiragana5);
+        if (selectedLists.includes("6")) pool = pool.concat(hiraganaSentences);
+
+        currentWord = pool[Math.floor(Math.random() * pool.length)];
+      } else if (input) {
         currentWord = input;
-        showScreen(wait);
+      } else {
+        alert("問題を入力するか、文字数を選んでください");
         return;
       }
 
-      // ひとり用：文字数ボタンが選ばれていれば自動出題
-      if (soloSelectedLengths.size > 0) {
-        currentWord = pickFromSoloLists();
-        showScreen(wait);
-        return;
-      }
-
-      alert('問題の言葉を入力するか、ひとりでちょうせんを選んでください');
+      showScreen(wait);
     };
 
-    wait.onclick = () => {
-      startCountdown();
-    };
+    wait.onclick = () => startCountdown();
 
     function startCountdown() {
       showScreen(play);
@@ -235,14 +248,8 @@
       playContent.textContent = currentWord;
       setTimeout(() => {
         playContent.textContent = '';
-        setTimeout(() => {
-          showResult();
-        }, 2000);
+        setTimeout(() => showScreen(result), 2000);
       }, selectedLevel.time);
-    }
-
-    function showResult() {
-      showScreen(result);
     }
 
     document.getElementById('showAnswerBtn').onclick = () => {
@@ -254,40 +261,6 @@
         showScreen(home);
       };
     };
-
-    renderLevelButtons(replayLevels, (lv) => {
-      selectedLevel = lv;
-      showScreen(wait);
-    });
-
-    // --- ひとり用ロジック ---
-    const soloButtons = document.querySelectorAll('#soloLengthButtons .level-btn');
-    soloButtons.forEach(btn => {
-      btn.onclick = () => {
-        const len = btn.dataset.length;
-        if (soloSelectedLengths.has(len)) {
-          soloSelectedLengths.delete(len);
-          btn.classList.remove('selected');
-        } else {
-          soloSelectedLengths.add(len);
-          btn.classList.add('selected');
-        }
-      };
-    });
-
-    function pickFromSoloLists() {
-      let pool = [];
-      soloSelectedLengths.forEach(len => {
-        if (len === '1' && typeof wordsHiragana1 !== 'undefined') pool = pool.concat(wordsHiragana1);
-        if (len === '2' && typeof wordsHiragana2 !== 'undefined') pool = pool.concat(wordsHiragana2);
-        if (len === '3' && typeof wordsHiragana3 !== 'undefined') pool = pool.concat(wordsHiragana3);
-        if (len === '4' && typeof wordsHiragana4 !== 'undefined') pool = pool.concat(wordsHiragana4);
-        if (len === '5' && typeof wordsHiragana5 !== 'undefined') pool = pool.concat(wordsHiragana5);
-        if (len === '6' && typeof wordsHiraganaSentences !== 'undefined') pool = pool.concat(wordsHiraganaSentences);
-      });
-      if (pool.length === 0) return '';
-      return pool[Math.floor(Math.random() * pool.length)];
-    }
   </script>
 </body>
 </html>
