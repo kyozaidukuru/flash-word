@@ -5,18 +5,31 @@
   <title>フラッシュことば</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    @font-face {
+      font-family: 'UDDigitalKyokasho';
+      src: url('ud-digital-kyokasho-nk-b.woff2') format('woff2'),
+           url('ud-digital-kyokasho-nk-b.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'UDDigitalKyokasho', 'UD Digi Kyokasho NK-B', 'UD デジタル 教科書体 NK-B', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #f7f7f7;
       color: #222;
       text-align: center;
+      min-height: 100vh;
     }
     .screen {
       display: none;
       min-height: 100vh;
       padding: 24px 16px;
       box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
     .screen.active { display: block; }
 
@@ -118,9 +131,9 @@
 
   <script>
     const levels = [
-      { name: 'ふつう', time: 1000 },
-      { name: 'ちょいむず', time: 800 },
-      { name: 'むずかしい', time: 500 },
+      { name: 'かんたん', time: 1000 },
+      { name: 'ふつう', time: 600 },
+      { name: 'ちょいむず', time: 400 },
       { name: 'げきむず', time: 200 },
       { name: 'チャンピオン', time: 50 },
     ];
