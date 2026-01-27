@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>フラッシュことば</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f7f7f7;
+      color: #222;
+      text-align: center;
+    }
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding: 24px 16px;
+      box-sizing: border-box;
+    }
+    .screen.active { display: block; }
+
+    h1 { font-size: 2.2rem; margin-bottom: 12px; }
+    p { line-height: 1.6; }
+
+    .field { margin: 16px 0; }
+    input[type="text"] {
+      font-size: 1.2rem;
+      padding: 8px 12px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .levels {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 16px 0;
+    }
+    .level-btn {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 2px solid #888;
+      background: #fff;
+      cursor: pointer;
+      min-width: 80px;
+    }
+    .level-btn.selected {
+      background: #333;
+      color: #fff;
+      border-color: #333;
+    }
+
+    button.main {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: none;
+      background: #007aff;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .flash-word {
+      font-size: 3rem;
+      font-weight: bold;
+    }
+
+    .countdown {
+      font-size: 3rem;
+    }
+
+    .white {
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <!-- ホーム画面 -->
+  <div id="home" class="screen active">
+    <h1>フラッシュことば</h1>
+    <p>
+      一瞬だけ見えることばを見て、なんて書いてあったかを答えてもらうゲームです。<br />
+      問題にしたい言葉を打ち込み、難易度を選んだら、スタートを押して出題できます。
+    </p>
+
+    <div class="field">
+      <label>問題：</label><br />
+      <input type="text" id="wordInput" placeholder="表示させたい言葉を入力" />
+    </div>
+
+    <div>
+      <div>難易度：</div>
+      <div class="levels" id="levelButtons"></div>
+    </div>
+
+    <button class="main" id="startBtn">出題</button>
+  </div>
+
+  <!-- 待機画面 -->
+  <div id="wait" class="screen">
+    <p>画面をタッチすると出題します</p>
+  </div>
+
+  <!-- カウントダウン・出題画面 -->
+  <div id="play" class="screen white">
+    <div id="playContent"></div>
+  </div>
+
+  <!-- 結果画面 -->
+  <div id="result" class="screen">
+    <h2>もう一度見る</h2>
+    <div class="levels" id="replayLevels"></div>
+    <button class="main" id="showAnswerBtn">こたえ</button>
+  </div>
+
+  <script>
+    const levels = [
+      { name: 'ふつう', time: 1000 },
+      { name: 'ちょいむず', time: 800 },
+      { name: 'むずかしい', time: 500 },
+      { name: 'げきむず', time: 200 },
+      { name: 'チャンピオン', time: 50 },
+    ];
+
+    let selectedLevel = levels[0];
+    let currentWord = '';
+
+    const home = document.getElementById('home');
+    const wait = document.getElementById('wait');
+    const play = document.getElementById('play');
+    const playContent = document.getElementById('playContent');
+    const result = document.getElementById('result');
+
+    function showScreen(screen) {
+      [home, wait, play, result].forEach(s => s.classList.remove('active'));
+      screen.classList.add('active');
+    }
+
+    function renderLevelButtons(container, onSelect) {
+      container.innerHTML = '';
+      levels.forEach(lv => {
+        const btn = document.createElement('div');
+        btn.className = 'level-btn' + (lv === selectedLevel ? ' selected' : '');
+        btn.textContent = lv.name;
+        btn.onclick = () => {
+          selectedLevel = lv;
+          renderLevelButtons(container, onSelect);
+          if (onSelect) onSelect(lv);
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    const levelButtons = document.getElementById('levelButtons');
+    const replayLevels = document.getElementById('replayLevels');
+    renderLevelButtons(levelButtons);
+    renderLevelButtons(replayLevels);
+
+    document.getElementById('startBtn').onclick = () => {
+      const input = document.getElementById('wordInput').value.trim();
+      if (!input) {
+        alert('問題の言葉を入力してください');
+        return;
+      }
+      currentWord = input;
+      showScreen(wait);
+    };
+
+    wait.onclick = () => {
+      startCountdown();
+    };
+
+    function startCountdown() {
+      showScreen(play);
+      let count = 3;
+      playContent.textContent = count;
+      playContent.className = 'countdown';
+
+      const timer = setInterval(() => {
+        count--;
+        if (count > 0) {
+          playContent.textContent = count;
+        } else {
+          clearInterval(timer);
+          showWord();
+        }
+      }, 1000);
+    }
+
+    function showWord() {
+      playContent.className = 'flash-word';
+      playContent.textContent = currentWord;
+      setTimeout(() => {
+        playContent.textContent = '';
+        setTimeout(() => {
+          showResult();
+        }, 2000);
+      }, selectedLevel.time);
+    }
+
+    function showResult() {
+      showScreen(result);
+    }
+
+    document.getElementById('showAnswerBtn').onclick = () => {
+      showScreen(play);
+      playContent.className = 'flash-word';
+      playContent.textContent = currentWord;
+      play.onclick = () => {
+        play.onclick = null;
+        showScreen(home);
+      };
+    };
+
+    renderLevelButtons(replayLevels, (lv) => {
+      selectedLevel = lv;
+      showScreen(wait);
+    });
+  </script>
+</body>
+</html>
