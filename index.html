@@ -22,11 +22,11 @@
       min-height: 100vh;
       padding: 24px 16px;
       box-sizing: border-box;
-      display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
+    .screen.active { display: flex; }
     .screen.active { display: flex; }
 
     h1 { font-size: 2.2rem; margin-bottom: 12px; }
@@ -90,8 +90,7 @@
   <!-- ホーム画面 -->
   <div id="home" class="screen active">
     <h1>フラッシュことば</h1>
-    <div class="levels" style="margin-bottom:12px;">
-      <div class="level-btn selected" id="twoPlayerModeBtn">2人用（入力）</div>
+    
       <div class="level-btn" id="onePlayerModeBtn">1人用（自動）</div>
     </div>
     <p>
@@ -104,8 +103,7 @@
       <input type="text" id="wordInput" placeholder="表示させたい言葉を入力" />
     </div>
 
-    <div class="one-player-only" style="display:none">
-      <div>文字種：</div>
+    
       <div class="levels" id="scriptButtons"></div>
       <div style="margin-top:8px">文字数：</div>
       <div class="levels" id="lengthButtons"></div>
