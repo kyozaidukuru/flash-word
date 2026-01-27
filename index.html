@@ -96,10 +96,14 @@ body {
     </p>
 
 
-    <div class="field">
-      <label>問題：</label><br />
-      <input type="text" id="wordInput" placeholder="表示させたい言葉を入力" />
-    </div>
+  <div class="field" style="display:flex; gap:8px; align-items:center;">
+  <div style="flex:1;">
+    <label>問題：</label><br />
+    <input type="text" id="wordInput" placeholder="表示させたい言葉を入力" />
+  </div>
+  <button id="toggleMaskBtn" style="height:40px;">目隠し</button>
+</div>
+
 
     <div style="margin-top:8px;"><div>難易度：</div>
       <div class="levels" id="levelButtons"></div>
@@ -125,8 +129,19 @@ body {
     <button class="main" id="showAnswerBtn">こたえ</button>
   </div>
 
-  <script>
-    const levels = [
+ <script>
+  const toggleMaskBtn = document.getElementById('toggleMaskBtn');
+  const wordInput = document.getElementById('wordInput');
+
+  let isMasked = false;
+
+  toggleMaskBtn.onclick = () => {
+    isMasked = !isMasked;
+    wordInput.type = isMasked ? 'password' : 'text';
+    toggleMaskBtn.textContent = isMasked ? '表示する' : '目隠し';
+  };
+
+  const levels = [
       { name: 'かんたん', time: 1000 },
       { name: 'ふつう', time: 600 },
       { name: 'ちょいむず', time: 400 },
