@@ -9,22 +9,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     
-    body {
+body {
   margin: 0;
   font-family: 'Kosugi Maru', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: #f7f7f7;
   color: #222;
   text-align: center;
-  min-height: 100vh;   /* ← これを追加 */
+  min-height: 100vh;
 }
-    .screen {
-      display: none;
-      padding: 24px 16px;
-      box-sizing: border-box;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
+
+.screen {
+  display: none;
+  min-height: 100vh;   
+  padding: 24px 16px;
+  box-sizing: border-box;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
     .screen.active { display: flex; }
 
     h1 { font-size: 2.2rem; margin-bottom: 12px; }
