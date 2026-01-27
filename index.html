@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <title>フラッシュことば</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    @font-face {
-      font-family: 'UDDigitalKyokasho';
-      src: url('ud-digital-kyokasho-nk-b.woff2') format('woff2'),
-           url('ud-digital-kyokasho-nk-b.woff') format('woff');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
+    
     body {
       margin: 0;
-      font-family: 'UDDigitalKyokasho', 'UD Digi Kyokasho NK-B', 'UD デジタル 教科書体 NK-B', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Kosugi Maru', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #f7f7f7;
       color: #222;
       text-align: center;
@@ -94,14 +90,25 @@
   <!-- ホーム画面 -->
   <div id="home" class="screen active">
     <h1>フラッシュことば</h1>
+    <div class="levels" style="margin-bottom:12px;">
+      <div class="level-btn selected" id="twoPlayerModeBtn">2人用（入力）</div>
+      <div class="level-btn" id="onePlayerModeBtn">1人用（自動）</div>
+    </div>
     <p>
       一瞬だけ見えることばを見て、なんて書いてあったかを答えてもらうゲームです。<br />
       問題にしたい言葉を打ち込み、難易度を選んだら、スタートを押して出題できます。
     </p>
 
-    <div class="field">
+    <div class="field two-player-only">
       <label>問題：</label><br />
       <input type="text" id="wordInput" placeholder="表示させたい言葉を入力" />
+    </div>
+
+    <div class="one-player-only" style="display:none">
+      <div>文字種：</div>
+      <div class="levels" id="scriptButtons"></div>
+      <div style="margin-top:8px">文字数：</div>
+      <div class="levels" id="lengthButtons"></div>
     </div>
 
     <div>
