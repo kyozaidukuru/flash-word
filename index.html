@@ -2,133 +2,133 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>フラッシュことば</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+  <title>フラッシュことば</title>
 
   <style>
+    /* ========================================
+       デザインシステム（共通変数）
+       ======================================== */
+    :root {
+        --primary-color: #FFB6C1;      /* やさしいピンク */
+        --secondary-color: #FFE4B5;    /* もこもこオレンジ */
+        --accent-color: #87CEEB;       /* さわやかブルー */
+        --success-color: #98FB98;      /* やさしい緑 */
+        --warning-color: #FFD700;      /* きらきら黄色 */
+        --text-color: #4A4A4A;         /* 優しい黒 */
+        --bg-color: #FFFAF0;           /* あたたかい白 */
+        --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
     body {
-      margin: 0;
-      font-family: 'Kosugi Maru', system-ui, sans-serif;
-      background: #f7f7f7;
-      color: #222;
-      text-align: center;
-      min-height: 100vh;
+        margin: 0;
+        font-family: 'Segoe UI', 'Meiryo', sans-serif;
+        background: linear-gradient(135deg, #FFF5E6 0%, #FFE4E1 100%);
+        color: var(--text-color);
+        text-align: center;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
+    /* 各画面コンテナ */
     .screen {
-      display: none;
-      min-height: 100vh;
-      padding: 24px 16px;
-      box-sizing: border-box;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
+        display: none;
+        width: 90%;
+        max-width: 600px;
+        background: white;
+        padding: 40px 20px;
+        border-radius: 30px;
+        box-shadow: var(--shadow);
+        box-sizing: border-box;
     }
+    .screen.active { display: flex; flex-direction: column; align-items: center; }
 
-    .screen.active { display: flex; }
-
-    h1 { font-size: 2.2rem; margin-bottom: 12px; }
-    p { line-height: 1.6; }
-
-    .field { margin: 16px 0; width: 100%; max-width: 400px; margin-left: auto; margin-right: auto; }
-
+    h1, h2 { color: var(--text-color); margin-bottom: 20px; }
+    
+    /* フォーム周り */
+    .field { margin: 20px 0; width: 100%; }
     #wordInput {
-      font-size: 1.2rem;
-      padding: 8px 12px;
-      width: 100%;
-      box-sizing: border-box;
-      text-align: center;
-    }
-
-    /* 目隠し用CSS */
-    .masked {
-      -webkit-text-security: disc;
-      text-security: disc;
-    }
-
-    @supports not ((-webkit-text-security: disc) or (text-security: disc)) {
-      .masked {
-        color: transparent !important;
-        text-shadow: 0 0 10px rgba(0,0,0,0.5);
-      }
+        font-size: 1.2rem;
+        padding: 15px;
+        width: 100%;
+        border: 3px solid var(--primary-color);
+        border-radius: 15px;
+        box-sizing: border-box;
+        text-align: center;
+        margin-top: 10px;
     }
 
     .mask-toggle {
-      margin-top: 8px;
-      font-size: 0.9rem;
-      color: #007aff;
-      text-decoration: underline;
-      cursor: pointer;
-      display: inline-block;
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: var(--accent-color);
+        font-weight: bold;
+        cursor: pointer;
     }
 
+    /* ボタン群 */
     .levels {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin: 8px 0;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 15px 0;
     }
 
     .level-btn {
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 2px solid #888;
-      background: #fff;
-      cursor: pointer;
-      min-width: 80px;
+        padding: 12px 20px;
+        border-radius: 15px;
+        border: 2px solid var(--accent-color);
+        background: white;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s ease;
     }
-
     .level-btn.selected {
-      background: #333;
-      color: #fff;
-      border-color: #333;
+        background: var(--accent-color);
+        color: white;
+        border-color: var(--accent-color);
     }
 
     button.main {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      padding: 12px 24px;
-      border-radius: 10px;
-      border: none;
-      background: #007aff;
-      color: #fff;
-      cursor: pointer;
+        margin-top: 20px;
+        padding: 15px 40px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 20px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
     }
+    button.main:hover { transform: translateY(-3px); filter: brightness(1.1); }
 
-    .flash-word {
-      font-size: 4rem;
-      font-weight: bold;
-    }
+    /* フラッシュ表示用 */
+    .flash-word { font-size: 4rem; font-weight: bold; color: var(--text-color); }
+    .countdown { font-size: 5rem; font-weight: bold; color: var(--accent-color); }
 
-    .countdown {
-      font-size: 5rem;
-      font-weight: bold;
-    }
-
-    .white {
-      background: #fff;
-      justify-content: center;
-    }
+    /* 目隠し用CSS */
+    .masked { -webkit-text-security: disc; text-security: disc; }
   </style>
 </head>
 
 <body>
+
   <div id="home" class="screen active">
     <h1>フラッシュことば</h1>
     <p>一瞬だけ見えることばを当てよう！</p>
 
     <div class="field">
-      <label>問題：</label><br>
-      <input type="text" id="wordInput" placeholder="ここに入力">
+      <label>問題：</label>
+      <input type="text" id="wordInput" placeholder="直接入力 または 下から選ぶ">
       <div class="mask-toggle" id="maskToggle">●●●で隠す</div>
     </div>
 
-    <div style="margin-top:12px;">ひとりで ちょうせんする</div>
+    <div>ひとりで ちょうせんする</div>
     <div class="levels" id="soloButtons">
       <div class="level-btn" data-len="1">1もじ</div>
       <div class="level-btn" data-len="2">2もじ</div>
@@ -138,28 +138,26 @@
       <div class="level-btn" data-len="6">6もじいじょう</div>
     </div>
 
-    <div style="margin-top:12px;">難易度（表示時間）：</div>
+    <div>難易度（表示時間）：</div>
     <div class="levels" id="levelButtons"></div>
 
-    <button class="main" id="startBtn">出題</button>
+    <button class="main" id="startBtn">出題開始！</button>
   </div>
 
   <div id="wait" class="screen">
-    <div style="margin-top: 40vh;">
-      <p style="font-size: 1.5rem;">画面をタッチすると<br>出題します</p>
-    </div>
+    <p style="font-size: 1.5rem; margin-top: 20px;">画面をタッチすると<br>出題します</p>
   </div>
 
-  <div id="play" class="screen white">
+  <div id="play" class="screen">
     <div id="playContent"></div>
   </div>
 
   <div id="result" class="screen">
     <h2>こたえはわかりましたか？</h2>
-    <div style="margin-bottom: 10px;">もう一度見る（難易度をえらんでね）</div>
+    <div style="margin-bottom: 10px;">もう一度見る</div>
     <div id="replayLevels" class="levels"></div>
     
-    <div style="margin-top: 20px;">
+    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
       <button class="main" id="showAnswerBtn">こたえを表示</button>
       <button class="main" style="background:#888;" onclick="location.reload()">最初にもどる</button>
     </div>
@@ -173,6 +171,7 @@
   <script src="words-hiraganaSentences.js"></script>
 
   <script>
+    /* （以下、JavaScriptは元のロジックをそのまま活用してください） */
     const levels = [
       { name: 'かんたん', time: 1000 },
       { name: 'ふつう', time: 600 },
@@ -211,16 +210,10 @@
         btn.textContent = lv.name;
         btn.onclick = (e) => {
           e.stopPropagation();
-          selectedLevel = lv; // 難易度を更新
-          
-          // 全てのレベルボタン表示を更新
+          selectedLevel = lv;
           renderLevelButtons(document.getElementById('levelButtons'));
           renderLevelButtons(document.getElementById('replayLevels'));
-
-          // もしリザルト画面でのクリックなら、そのまま再出題へ
-          if (container.id === 'replayLevels') {
-            showScreen(wait);
-          }
+          if (container.id === 'replayLevels') { showScreen(wait); }
         };
         container.appendChild(btn);
       });
@@ -252,10 +245,7 @@
           if (selectedLists.includes("4")) pool = pool.concat(hiragana4);
           if (selectedLists.includes("5")) pool = pool.concat(hiragana5);
           if (selectedLists.includes("6")) pool = pool.concat(hiraganaLong);
-        } catch(e) {
-          alert("ワードリストの読み込みに失敗しました。");
-          return;
-        }
+        } catch(e) { alert("ワードリストの読み込みに失敗しました。"); return; }
         currentWord = pool[Math.floor(Math.random() * pool.length)];
       } else if (input) {
         currentWord = input;
@@ -297,7 +287,6 @@
       showScreen(play);
       playContent.className = 'flash-word';
       playContent.textContent = currentWord;
-      // 答え画面ではクリックでホームへ
       setTimeout(() => {
         play.onclick = () => {
           play.onclick = null;
