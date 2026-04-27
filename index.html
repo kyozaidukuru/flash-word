@@ -120,12 +120,12 @@
 
   <div id="home" class="screen active">
     <h1>フラッシュことば</h1>
-    <p>一瞬だけ見えることばを当てよう！</p>
+    <p>すこしだけ　みえる　ことばを　あてよう！</p>
 
     <div class="field">
-      <label>問題：</label>
-      <input type="text" id="wordInput" placeholder="直接入力 または 下から選ぶ">
-      <div class="mask-toggle" id="maskToggle">●●●で隠す</div>
+      <label>もんだい：</label>
+      <input type="text" id="wordInput" placeholder="じぶんで　ことばを　いれる または したから　えらぶ">
+      <div class="mask-toggle" id="maskToggle">●●●でかくす</div>
     </div>
 
     <div>ひとりで ちょうせんする</div>
@@ -138,14 +138,14 @@
       <div class="level-btn" data-len="6">6もじいじょう</div>
     </div>
 
-    <div>難易度（表示時間）：</div>
+    <div>みえる　じかんを　えらぶ</div>
     <div class="levels" id="levelButtons"></div>
 
-    <button class="main" id="startBtn">出題開始！</button>
+    <button class="main" id="startBtn">はじめる</button>
   </div>
 
   <div id="wait" class="screen">
-    <p style="font-size: 1.5rem; margin-top: 20px;">画面をタッチすると<br>出題します</p>
+    <p style="font-size: 1.5rem; margin-top: 20px;">がめんをタッチすると<br>はじまります</p>
   </div>
 
   <div id="play" class="screen">
@@ -153,13 +153,13 @@
   </div>
 
   <div id="result" class="screen">
-    <h2>こたえはわかりましたか？</h2>
-    <div style="margin-bottom: 10px;">もう一度見る</div>
+    <h2>こたえは　わかったかな？</h2>
+    <div style="margin-bottom: 10px;">もういちど　みる</div>
     <div id="replayLevels" class="levels"></div>
     
     <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-      <button class="main" id="showAnswerBtn">こたえを表示</button>
-      <button class="main" style="background:#888;" onclick="location.reload()">最初にもどる</button>
+      <button class="main" id="showAnswerBtn">こたえを　みる</button>
+      <button class="main" style="background:#888;" onclick="location.reload()">さいしょに　もどる</button>
     </div>
   </div>
 
@@ -173,11 +173,11 @@
   <script>
     /* （以下、JavaScriptは元のロジックをそのまま活用してください） */
     const levels = [
-      { name: 'かんたん', time: 1000 },
-      { name: 'ふつう', time: 600 },
-      { name: 'ちょいむず', time: 400 },
-      { name: 'げきむず', time: 200 },
-      { name: 'チャンピオン', time: 50 },
+      { name: '☆<br>3びょう', time: 3000 },
+      { name: '☆☆<br>1びょう', time: 1000 },
+      { name: '☆☆☆<br>0.6びょう', time: 600 },
+      { name: '☆☆☆☆<br>0.2びょう', time: 200 },
+      { name: '☆☆☆☆☆<br>0.05びょう', time: 50 },
     ];
 
     let selectedLevel = levels[0];
