@@ -124,7 +124,7 @@
 
     <div class="field">
       <label>もんだい：</label>
-      <input type="text" id="wordInput" placeholder="じぶんで　ことばを　いれる または したから　えらぶ">
+      <input type="text" id="wordInput" placeholder="ことばを　いれるか　　  したから　えらぶ">
       <div class="mask-toggle" id="maskToggle">●●●でかくす</div>
     </div>
 
@@ -173,11 +173,11 @@
   <script>
     /* （以下、JavaScriptは元のロジックをそのまま活用してください） */
     const levels = [
-      { name: '☆<br>3びょう', time: 3000 },
-      { name: '☆☆<br>1びょう', time: 1000 },
-      { name: '☆☆☆<br>0.6びょう', time: 600 },
-      { name: '☆☆☆☆<br>0.2びょう', time: 200 },
-      { name: '☆☆☆☆☆<br>0.05びょう', time: 50 },
+      { name: '☆ 3びょう', time: 3000 },
+      { name: '☆☆ 1びょう', time: 1000 },
+      { name: '☆☆☆ 0.6びょう', time: 600 },
+      { name: '☆☆☆☆ 0.2びょう', time: 200 },
+      { name: '☆☆☆☆☆ 0.05びょう', time: 50 },
     ];
 
     let selectedLevel = levels[0];
@@ -199,7 +199,7 @@
 
     maskToggle.onclick = () => {
       wordInput.classList.toggle('masked');
-      maskToggle.textContent = wordInput.classList.contains('masked') ? "表示する" : "●●●で隠す";
+      maskToggle.textContent = wordInput.classList.contains('masked') ? "ひょうじする" : "●●●でかくす";
     };
 
     function renderLevelButtons(container) {
